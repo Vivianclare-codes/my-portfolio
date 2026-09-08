@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import portfolioPreview from '../assets/portfolio.jpg'
+import deskPreview from '../assets/desk.jpg'
 
 const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || 'https://formspree.io/f/mnpqodbw'
 const WHATSAPP_NUMBER = '2348157143387'
@@ -15,6 +17,7 @@ const projects = [
     tags: ['Next.js', 'TypeScript', 'Supabase', 'Paystack'],
     github: 'https://github.com/Vivianclare-codes/clarebags1.git',
     live: 'https://clarebags1.vercel.app/',
+    preview: portfolioPreview,
     accent: 'burgundy',
   },
   {
@@ -25,6 +28,7 @@ const projects = [
     tags: ['Shopify', 'Liquid', 'Theme customisation'],
     github: 'https://github.com/Vivianclare-codes/amaracodes.git',
     live: 'https://amara-co-xkd9y8gn.myshopify.com/',
+    preview: deskPreview,
     accent: 'sand',
   },
 ]
@@ -110,7 +114,7 @@ function ProjectInquiryModal({ isOpen, onClose }) {
 
 function ProjectCard({ project }) {
   return <article className={`project-card ${project.accent}`}>
-    <div className="project-visual"><span>{project.number}</span><div className="visual-orb" /><div className="visual-label">Ecommerce<br />experience</div></div>
+    <div className="project-visual"><img className="project-preview" src={project.preview.src} alt={`${project.title} website preview`} /></div>
     <div className="project-content"><p className="eyebrow">{project.type}</p><h3>{project.title}</h3><p className="project-description">{project.description}</p><div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><div className="project-links"><a href={project.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight /></a><a href={project.live} target="_blank" rel="noreferrer">Live store <ArrowUpRight /></a></div></div>
   </article>
 }

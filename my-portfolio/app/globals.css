@@ -14,6 +14,11 @@
 .inquiry-modal textarea { resize: vertical; }
 .inquiry-modal input:focus, .inquiry-modal select:focus, .inquiry-modal textarea:focus { outline: 1px solid var(--accent); outline-offset: 2px; }
 .modal-confirmation { margin: 20px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.project-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; transition: transform .45s ease; }
+.burgundy .project-visual { height: 300px; }
+.burgundy .project-preview { object-position: center 50%; }
+.project-card:hover .project-preview { transform: scale(1.04); }
+@media (max-width: 760px) { .burgundy .project-visual { height: 190px; } }
 
 :root { --background: #f8f3eb; --foreground: #351b20; --muted: #806e69; --line: #dfd2c7; --accent: #7f2735; --display: Georgia, 'Times New Roman', serif; --sans: Arial, Helvetica, sans-serif; }
 * { box-sizing: border-box; } html { scroll-behavior: smooth; } body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--sans); } a { color: inherit; text-decoration: none; } .page-width { width: min(1180px, calc(100% - 64px)); margin-inline: auto; }
