@@ -1,139 +1,35 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import portfolioPreview from '../assets/portfolio.jpg'
-import deskPreview from '../assets/desk.jpg'
+import { useState } from 'react'
 
-const FORMSPREE_ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || 'https://formspree.io/f/mnpqodbw'
-const WHATSAPP_NUMBER = '2348157143387'
-const WHATSAPP_MESSAGE = "Hi Vivian! I found your portfolio and I'm interested in discussing a project with you."
-
+const skills = ['React', 'Next.js', 'TypeScript', 'Supabase', 'Shopify']
+const email = 'okechukwuvivian050@gmail.com'
+const linkedin = 'https://www.linkedin.com/in/vivian-okechukwu'
+const github = 'https://github.com/Vivianclare-codes'
 const projects = [
-  {
-    number: '01',
-    title: 'ClareBags',
-    type: 'Custom ecommerce storefront',
-    description: 'A polished shopping experience for a WhatsApp and Instagram-based bag business, with cart, Paystack checkout, and admin tools.',
-    tags: ['Next.js', 'TypeScript', 'Supabase', 'Paystack'],
-    github: 'https://github.com/Vivianclare-codes/clarebags1.git',
-    live: 'https://clarebags1.vercel.app/',
-    preview: portfolioPreview,
-    accent: 'burgundy',
-  },
-  {
-    number: '02',
-    title: 'Amara & Co.',
-    type: 'Shopify theme build',
-    description: 'A considered Shopify storefront shaped around the brand, products, and the small details that make browsing feel easy.',
-    tags: ['Shopify', 'Liquid', 'Theme customisation'],
-    github: 'https://github.com/Vivianclare-codes/amaracodes.git',
-    live: 'https://amara-co-xkd9y8gn.myshopify.com/',
-    preview: deskPreview,
-    accent: 'sand',
-  },
+  { number: '01', title: 'ClareBags', type: 'Next.js · Supabase · Paystack', description: 'A polished ecommerce experience for a WhatsApp and Instagram-based bag business, with cart, checkout, and admin tools.', github: 'https://github.com/Vivianclare-codes/clarebags1.git', live: 'https://clarebags1.vercel.app/', image: '/portfolio.jpg' },
+  { number: '02', title: 'Amara & Co.', type: 'Shopify · Liquid', description: 'A considered Shopify storefront shaped around the brand, products, and the small details that make browsing feel easy. Store Password: Crazy', github: 'https://github.com/Vivianclare-codes/amaracodes.git', live: 'https://amara-co-xkd9y8gn.myshopify.com/', image: '/desk.jpg' },
 ]
 
-function ArrowUpRight() { return <span aria-hidden="true" className="arrow">↗</span> }
-function GithubIcon() { return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 22v-3.3c.03-1-.4-1.8-1.1-2.2 3.6-.4 7.4-1.8 7.4-8a6.2 6.2 0 0 0-1.7-4.3 5.8 5.8 0 0 0-.1-4.3S18.1-.4 15 1.7a16.4 16.4 0 0 0-6 0C5.9-.4 4.4-.1 4.4-.1a5.8 5.8 0 0 0-.1 4.3 6.2 6.2 0 0 0-1.7 4.3c0 6.2 3.8 7.6 7.4 8-.7.4-1.1 1.2-1.1 2.2V22"/><path d="M8.9 18.2c-3.3 1.1-4-1.6-4-1.6-.7-1.7-1.6-2.1-1.6-2.1-1.3-.9.1-.9.1-.9 1.4.1 2.2 1.5 2.2 1.5 1.3 2.2 3.4 1.6 4.2 1.2"/></svg> }
-function LinkedinIcon() { return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4V8h4v2.2A4.6 4.6 0 0 1 16 8Z"/><path d="M2 9h4v12H2zM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg> }
-
-function getWhatsAppUrl() {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
-}
-
-function ProjectInquiryModal({ isOpen, onClose }) {
-  const [form, setForm] = useState({ name: '', email: '', projectType: '', description: '', budget: '' })
-  const [confirmation, setConfirmation] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  useEffect(() => {
-    if (!isOpen) return undefined
-
-    function handleKeyDown(event) {
-      if (event.key === 'Escape') onClose()
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, onClose])
-
-  if (!isOpen) return null
-
-  function updateField(event) {
-    setForm({ ...form, [event.target.name]: event.target.value })
-    setConfirmation('')
-  }
-
-  async function submitInquiry(event) {
-    event.preventDefault()
-    setIsSubmitting(true)
-    setConfirmation('')
-
-    try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          _subject: `New Project Inquiry from ${form.name}`,
-        }),
-      })
-
-      if (!response.ok) throw new Error('Form submission failed')
-      setConfirmation("Thanks for reaching out. I've received your message and will get back to you soon.")
-      setForm({ name: '', email: '', projectType: '', description: '', budget: '' })
-    } catch {
-      setConfirmation('Something went wrong while sending your message. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  return <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-    <section className="inquiry-modal" role="dialog" aria-modal="true" aria-labelledby="inquiry-title">
-      <button className="modal-close" type="button" onClick={onClose} aria-label="Close project inquiry">×</button>
-      <p className="eyebrow">Start a conversation</p>
-      <h2 id="inquiry-title">Let&apos;s talk about your project</h2>
-      <p className="modal-description">Tell me a little about what you&apos;re building, and I&apos;ll get back to you to schedule a call.</p>
-      <form onSubmit={submitInquiry}>
-        <label>Full Name<input name="name" value={form.name} onChange={updateField} required /></label>
-        <label>Email Address<input name="email" type="email" value={form.email} onChange={updateField} required /></label>
-        <label>Project Type<select name="projectType" value={form.projectType} onChange={updateField} required><option value="">Select a project type</option><option>E-commerce Website</option><option>WhatsApp Store</option><option>Website Redesign</option><option>Landing Page</option><option>Custom Web Application</option><option>SaaS / Startup Website</option><option>Other</option></select></label>
-        <label>Project Description<textarea name="description" value={form.description} onChange={updateField} required rows="4" /></label>
-        <label>Estimated Budget (optional)<select name="budget" value={form.budget} onChange={updateField}><option value="">Select a budget</option><option>Under $500</option><option>$500 – $1,000</option><option>$1,000 – $2,500</option><option>$2,500+</option><option>Not Sure Yet</option></select></label>
-        <button className="primary-button cta-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending...' : 'Continue'} <ArrowUpRight /></button>
-      </form>
-      {confirmation && <p className="modal-confirmation" role="status">{confirmation}</p>}
-    </section>
-  </div>
-}
-
-function ProjectCard({ project }) {
-  return <article className={`project-card ${project.accent}`}>
-    <div className="project-visual"><img className="project-preview" src={project.preview.src} alt={`${project.title} website preview`} /></div>
-    <div className="project-content"><p className="eyebrow">{project.type}</p><h3>{project.title}</h3><p className="project-description">{project.description}</p><div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><div className="project-links"><a href={project.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight /></a><a href={project.live} target="_blank" rel="noreferrer">Live store <ArrowUpRight /></a></div></div>
-  </article>
-}
+function Arrow() { return <span aria-hidden="true">↗</span> }
+function Github() { return <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4a9.6 9.6 0 0 0-3.04 18.71c.48.09.66-.21.66-.46v-1.69c-2.68.58-3.25-1.14-3.25-1.14-.44-1.12-1.07-1.42-1.07-1.42-.87-.59.07-.58.07-.58.96.07 1.47.99 1.47.99.86 1.46 2.25 1.04 2.8.8.09-.62.34-1.04.61-1.28-2.14-.24-4.39-1.07-4.39-4.77 0-1.05.38-1.91.99-2.58-.1-.24-.43-1.22.09-2.55 0 0 .81-.26 2.64.99A9.17 9.17 0 0 1 12 8.7c.82 0 1.65.11 2.42.32 1.83-1.25 2.64-.99 2.64-.99.52 1.33.19 2.31.09 2.55.61.67.99 1.53.99 2.58 0 3.71-2.26 4.53-4.41 4.77.35.3.65.87.65 1.75v2.59c0 .25.17.55.66.46A9.6 9.6 0 0 0 12 2.4Z" /></svg> }
+function Linkedin() { return <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M5.2 7.1a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2ZM3.8 20.1h2.8v-9H3.8v9Zm4.6 0h2.8v-5c0-1.32.25-2.6 1.89-2.6 1.62 0 1.64 1.51 1.64 2.69v4.91h2.8v-5.49c0-2.7-.58-4.78-3.73-4.78-1.51 0-2.52.83-2.93 1.62h-.04v-1.35H8.4v10Z" /></svg> }
+function Mail() { return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3.8 5.5h16.4c.77 0 1.4.63 1.4 1.4v10.2c0 .77-.63 1.4-1.4 1.4H3.8c-.77 0-1.4-.63-1.4-1.4V6.9c0-.77.63-1.4 1.4-1.4Zm.1 1.8 8.1 6 8.1-6M4 17.2l5.2-4.1m10.8 4.1-5.2-4.1" /></svg> }
 
 export default function Page() {
-  const [isInquiryOpen, setIsInquiryOpen] = useState(false)
-  const openInquiry = () => setIsInquiryOpen(true)
-  const closeInquiry = () => setIsInquiryOpen(false)
-
-  return <main>
-    <nav className="site-nav page-width" aria-label="Main navigation"><a className="brand" href="#top"><span className="brand-mark">V</span> Vivian Okechukwu</a><div className="nav-links"><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></div><button className="nav-cta cta-button" type="button" onClick={openInquiry}>Book a call <ArrowUpRight /></button></nav>
-    <section className="hero page-width" id="top"><div className="hero-copy"><p className="eyebrow hero-eyebrow"><span className="status-dot" /> Available for select projects</p><h1>Ecommerce that<br /><em>feels considered.</em></h1><p className="hero-intro">I&apos;m Vivian, an ecommerce developer helping vendors, brands, and agencies build storefronts that are easy to use and good to come back to.</p><div className="hero-actions"><button className="primary-button cta-button" type="button" onClick={openInquiry}>Book a call <ArrowUpRight /></button><a className="text-link" href={getWhatsAppUrl()} target="_blank" rel="noreferrer">Chat on WhatsApp <ArrowUpRight /></a><a className="text-link" href="#work">See my work <span aria-hidden="true">↓</span></a></div></div><div className="hero-note"><span className="note-line" /><p>Shopify &amp;<br /><strong>Headless ecommerce</strong><br /><span>Working worldwide</span></p></div></section>
-    <section className="services-strip page-width" aria-label="Services"><span>Shopify builds</span><span>Theme customisation</span><span>Headless storefronts</span><span>Conversion-minded UX</span></section>
-    <section className="work-section page-width" id="work"><div className="section-heading"><div><p className="eyebrow">Selected work</p><h2>Stores built to<br /><em>sell naturally.</em></h2></div><p className="section-caption">A mix of custom storefronts<br />and Shopify builds.</p></div><div className="project-grid">{projects.map((project) => <ProjectCard key={project.number} project={project} />)}</div></section>
-    <section className="about-section page-width" id="about"><p className="eyebrow">A little about me</p><div className="about-grid"><h2>Good ecommerce<br /><em>doesn&apos;t shout.</em></h2><div><p>I build quiet, useful storefronts for people who have something worth selling — from independent founders and growing brands to global teams looking for reliable Shopify or headless support.</p><button className="text-link cta-button" type="button" onClick={openInquiry}>Work with me <ArrowUpRight /></button></div></div></section>
-    <section className="contact-section page-width" id="contact"><p className="eyebrow">Have a store in mind?</p><h2>Let&apos;s make shopping<br /><em>feel simple.</em></h2><button className="primary-button cta-button" type="button" onClick={openInquiry}>Book a call <ArrowUpRight /></button></section>
-    <footer className="site-footer page-width"><a className="brand" href="#top"><span className="brand-mark">V</span> Vivian Okechukwu</a><p>© 2026 Vivian Okechukwu. Built with intention.</p><div className="footer-socials"><a href="https://www.linkedin.com/in/vivian-okechukwu" target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedinIcon /></a><a href="https://github.com/Vivianclare-codes" target="_blank" rel="noreferrer" aria-label="GitHub"><GithubIcon /></a></div></footer>
-    <ProjectInquiryModal isOpen={isInquiryOpen} onClose={closeInquiry} />
-  </main>
+  const [dark, setDark] = useState(false)
+  return <main className={dark ? 'site dark' : 'site'}><div className="shell">
+    <header><a className="brand" href="#top">VO<span>.</span></a><nav aria-label="Main navigation"><a href="#work">Work</a><a href="#skills">Skills</a><a href="#contact">Contact</a><button className="toggle" onClick={() => setDark(!dark)} aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} aria-pressed={dark}>☼ ◐</button></nav></header>
+    <section id="top" className="hero"><p className="eyebrow">Frontend developer <span>·</span> ecommerce specialist</p><h1>Thoughtful interfaces,<br /><em>built to perform.</em></h1><p className="intro">I&apos;m Vivian Okechukwu, a frontend developer focused on React, Next.js, and TypeScript. I build considered digital storefronts and product experiences that make complex things feel simple.</p><div className="actions"><a className="button filled" href="public/resume.pdf" download>{/* Add your resume as public/resume.pdf for download. */}Resume <Arrow /></a><a className="button outlined" href={linkedin} target="_blank" rel="noreferrer">LinkedIn <Arrow /></a></div></section>
+    <section id="skills" className="skills"><span>Working with</span><div>{skills.map((skill) => <b key={skill}>{skill}</b>)}</div></section>
+    <section id="work" className="work"><p className="eyebrow">Selected work</p><h2>Case studies</h2><div className="grid">{projects.map((project) => <article className="card" key={project.number}><div className="card-image" style={{backgroundImage:`url(${project.image})`}}></div><small>{project.number}</small><label>{project.type}</label><div><h3>{project.title}</h3><p>{project.description}</p><aside><a href={project.github} target="_blank" rel="noreferrer" aria-label={`${project.title} on GitHub`}><Github /></a><a href={project.live} target="_blank" rel="noreferrer" aria-label={`Visit ${project.title} live site`}><Arrow /></a></aside></div></article>)}</div></section>
+    <footer id="contact"><p>Have a project in mind? <a href={`mailto:${email}`}>Let&apos;s talk.</a></p><div className="socials"><a href={linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin /></a><a href={github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github /></a><a href={`mailto:${email}`} aria-label="Email"><Mail /></a></div><small>© {new Date().getFullYear()} Vivian Okechukwu</small></footer>
+  </div><style jsx>{`
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap');
+    .site{--bg:#E9DFCE;--fg:#2B2622;--accent:#8A6A3E;min-height:100vh;background:var(--bg);color:var(--fg);transition:.3s}.dark{--bg:#2B2622;--fg:#E9DFCE;--accent:#C19A68}.shell{width:min(calc(100% - 48px),1120px);margin:auto}header{display:flex;justify-content:space-between;align-items:center;padding:34px 0;border-bottom:1px solid color-mix(in srgb,var(--fg) 20%,transparent)}.brand{color:var(--fg);font:700 20px Manrope,sans-serif;text-decoration:none}.brand span,em,.eyebrow,a:hover{color:var(--accent)}nav{display:flex;align-items:center;gap:28px}nav a{color:var(--fg);font:500 12px 'DM Mono',monospace;text-decoration:none}.toggle{border:1px solid color-mix(in srgb,var(--fg) 55%,transparent);border-radius:999px;padding:5px 9px;background:transparent;color:var(--fg);cursor:pointer}.hero{max-width:780px;padding:130px 0 125px}.eyebrow{font:500 11px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin:0 0 24px}.eyebrow span{padding:0 8px;color:var(--fg);opacity:.5}h1,h2,h3{font-family:'Playfair Display',serif;font-weight:500}h1{font-size:clamp(48px,7vw,88px);line-height:1.02;letter-spacing:-.05em;margin:0 0 30px}em{font-style:italic}.intro{max-width:560px;font:16px/1.75 Manrope,sans-serif;opacity:.8;margin:0 0 36px}.actions{display:flex;gap:12px}.button{width:145px;padding:15px 18px;display:inline-flex;justify-content:center;gap:20px;text-decoration:none;font:600 11px 'DM Mono',monospace;transition:.2s}.filled{background:var(--fg);color:var(--bg)}.outlined{border:1px solid var(--fg);color:var(--fg)}.button:hover{transform:translateY(-2px)}.skills{display:flex;gap:28px;padding:21px 0;border-block:1px solid color-mix(in srgb,var(--fg) 20%,transparent);font:11px 'DM Mono',monospace;text-transform:uppercase}.skills>span{opacity:.55}.skills div{display:flex;gap:24px;flex-wrap:wrap}.skills b{font:500 12px Manrope,sans-serif;text-transform:none}.work{padding:125px 0 135px}.work h2{font-size:clamp(40px,5vw,60px);margin:0 0 50px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{min-height:345px;padding:0;border:1px solid color-mix(in srgb,var(--fg) 28%,transparent);display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--bg)}.card-image{width:100%;height:200px;background-size:cover;background-position:center;flex-shrink:0}.card small,.card label,.card>div{padding-left:26px;padding-right:26px}.card>div{padding-bottom:26px;padding-top:26px}.card small,.card label,footer>small{font:10px 'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;opacity:.6}.card small{display:block;margin:0 0 12px}.card label{position:absolute;right:26px;top:220px;background:color-mix(in srgb,var(--fg) 2%,var(--bg));padding:4px 0}.card>div{margin-top:auto}.card h3{font-size:34px;margin:0 0 12px}.card p{max-width:370px;font:13px/1.65 Manrope,sans-serif;opacity:.75;margin:0 0 22px}.card aside,.socials{display:flex;gap:9px}.card aside a,.socials a{width:30px;height:30px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--fg) 58%,transparent);color:var(--fg);text-decoration:none}.card aside a:hover,.socials a:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,var(--bg))}.card svg,.socials svg{width:15px;height:15px}.footer,footer{display:flex;flex-direction:column;align-items:center;gap:22px;padding:30px 0 38px;border-top:1px solid color-mix(in srgb,var(--fg) 20%,transparent);text-align:center}footer p{font:14px Manrope,sans-serif}footer p a{color:var(--accent);text-decoration:none}@media(max-width:650px){.shell{width:calc(100% - 36px)}header{padding:24px 0}nav{gap:15px}nav a{font-size:10px}.hero{padding:90px 0 85px}.intro{font-size:14px}.skills{flex-direction:column;gap:14px}.work{padding:88px 0 95px}.grid{grid-template-columns:1fr}.card{min-height:310px}.card label{position:static;order:-1;margin:9px 0 38px}}
+  `}</style></main>
 }
 
-export { ProjectCard }
+// Keep the Shopify storefront password in Shopify admin; never expose it in this public client file.
+// Configure the store password in Shopify admin only; do not commit it to source control.
+// Existing assets can be added to public/ and referenced with their current filenames when needed.

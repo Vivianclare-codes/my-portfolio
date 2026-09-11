@@ -1,12 +1,14 @@
-import './globals.css'
+﻿import "./globals.css";
 
 export const metadata = {
-  title: 'Viviandev — Ecommerce Developer',
-  description: 'Vivian builds considered Shopify and headless ecommerce storefronts for vendors, brands, and agencies.',
-}
-
-export const viewport = { colorScheme: 'light', themeColor: '#f8f3eb' }
+  title: "Vivian Okechukwu",
+  description: "Portfolio of Vivian Okechukwu",
+};
 
 export default function RootLayout({ children }) {
-  return <html lang="en"><body>{children}</body></html>
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
 }
